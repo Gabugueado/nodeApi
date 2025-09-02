@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import { getUser, getUsers, postUser } from './controllers/users';
-import { getHabit, getHabits, postHabit, putHabit } from './controllers/habits';
+import { assignHabit, getHabit, getHabits, HabitsOnUsers, patchHabit, postHabit } from './controllers/habits';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -35,7 +35,14 @@ app.post('/habit', postHabit);
 // Get habit by ID
 app.get('/habit/:id', getHabit);
 
-app.put('/habit/:id', putHabit);
+// Update Habit by ID
+app.patch('/habit/:id', patchHabit);
+
+// Assign habit
+app.post('/assignHabit', assignHabit);
+
+
+app.get('/HabitsOnUsers/:id', HabitsOnUsers)
 
 // Graceful shutdown
 process.on('SIGINT', async () => {

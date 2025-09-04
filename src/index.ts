@@ -1,12 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-import { getUser, getUsers, postUser } from './controllers/users';
-import { assignHabit, getHabit, getHabits, HabitsOnUsers, patchHabit, postHabit } from './controllers/habits';
-import { login, register, verifyToken } from './controllers/login';
+
+import router from "./router/index" ;
 
 
 const app = express();
+
 const prisma = new PrismaClient()
 const port = 3000;
 
@@ -17,19 +17,9 @@ app.get('/', (req, res) => {
     res.send('Hello World! NodeAPI with PostgreSQL is running.');
 });
 
-app.get('/users', verifyToken, getUsers);
-app.post('/user',postUser);
-app.get('/user/:id', getUser);
+app.use(router);
 
-app.get('/habits', verifyToken, getHabits );
-app.post('/habit', postHabit);
-app.get('/habit/:id', getHabit);
-app.patch('/habit/:id', patchHabit);
-app.post('/assignHabit', assignHabit);
-app.get('/HabitsOnUsers/:id',verifyToken, HabitsOnUsers)
 
-app.post('/login', login)
-app.post('/register', register)
 
 process.on('SIGINT', async () => {
     console.log('\nGracefully shutting down...');
@@ -40,3 +30,5 @@ process.on('SIGINT', async () => {
 app.listen(port, () => {
     console.log(`NodeAPI with PostgreSQL listening on port ${port}`);
 });
+
+

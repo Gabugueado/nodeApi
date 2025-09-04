@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import {Request, Response} from 'express'
-
+import bcrypt from "bcrypt"
 
 const prisma = new PrismaClient();
 
@@ -16,11 +16,13 @@ export const getUsers = async (req:Request, res:Response) => {
 
 export const postUser = async (req:Request, res:Response)=> {
     try {
-        const { email, name } = req.body;
+        const { email, name, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10); 
         const user = await prisma.user.create({
             data: {
                 email,
                 name,
+                password: hashedPassword
             },
         });
         res.status(201).json(user);
@@ -41,5 +43,22 @@ export const getUser = async (req:Request, res:Response) => {
         }
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch user' });
+    }
+}
+
+export const AssignRole = async (req:Request, res:Response) => {
+    try {
+        if (!req.body) return res.status(404).json("body data not provided")
+
+        const {idUser, idRole} = req.body
+
+        const assignedRole = await prisma.userRole.create({
+            data: {
+                idUser, idRole, assignedBy: 'admin'
+            }
+        })
+        return res.status(201).json(assignedRole);
+    } catch (error) {
+        return res.status(500).json("server error")
     }
 }

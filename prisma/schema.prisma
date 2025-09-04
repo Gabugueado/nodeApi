@@ -14,33 +14,73 @@ datasource db {
 }
 
 model User {
-  id        Int             @id @default(autoincrement())
-  email     String          @unique
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
   name      String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  password  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt
 
   habits    HabitsOnUsers[]
+  role UserRole[]
 }
 
 model Habit {
-  id          Int             @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
 
   users       HabitsOnUsers[]
+  habitDetail HabitDetail[]
 }
 
+model HabitDetail {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  habitDate   DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  idHabit     Int
+
+  habit   Habit @relation(fields: [idHabit], references: [id])
+}
+
+
 model HabitsOnUsers {
-  habitId   Int
-  userId    Int
-  assignedAt DateTime @default(now())
-  assignedBy String?
+  idHabit     Int 
+  idUser      Int
+  assignedAt  DateTime @default(now())
+  assignedBy  String?
 
-  habit Habit @relation(fields: [habitId], references: [id])
-  user  User  @relation(fields: [userId], references: [id])
+  habit Habit @relation(fields: [idHabit], references: [id])
+  user  User  @relation(fields: [idUser], references: [id])
 
-  @@id([habitId, userId])
+  @@id([idHabit, idUser])
+}
+
+
+model Role {
+  id          Int       @id @unique @default(autoincrement())
+  name        String
+  description String?
+  CreatedAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
+
+  users UserRole[]
+}
+
+model UserRole {
+  idUser      Int @unique // primera fase solo 1 rol por usuario.
+  idRole      Int 
+  assignedAt  DateTime @default(now())
+  assignedBy  String
+
+  user   User @relation(fields: [idUser], references: [id])
+  role   Role @relation(fields: [idRole], references: [id])
+
+  @@id([idUser, idRole])
 }

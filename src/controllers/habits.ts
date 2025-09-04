@@ -88,8 +88,8 @@ export const assignHabit = async ( req: Request, res: Response ) => {
 
         const newHabitOnUser = await prisma.habitsOnUsers.create({
             data: {
-                userId: +userId,
-                habitId: +habitId,
+                idUser: +userId,
+                idHabit: +habitId,
                 assignedBy: assignedBy
             }
         })
@@ -107,7 +107,7 @@ export const HabitsOnUsers = async ( req: Request, res: Response ) => {
         const { id } = req.params;
         const habits = await prisma.habitsOnUsers.findMany({
             where: {
-                habitId: +id
+                idHabit: +id
             },
             include: {
                 habit: true,
@@ -116,8 +116,27 @@ export const HabitsOnUsers = async ( req: Request, res: Response ) => {
         })
         if (!habits) return res.status(404).json({ error: "habits not founds"})
         
-        
+        res.status(200).json(habits)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Failed to found habits on users" });
+    }
+}
 
+export const HabitsOfUser = async ( req: Request, res: Response ) => {
+    try {
+        const { id } = req.params;
+        const habits = await prisma.habitsOnUsers.findMany({
+            where: {
+                idUser: +id
+            },
+            include: {
+                habit: true,
+                user: true
+            }
+        })
+        if (!habits) return res.status(404).json({ error: "habits not founds"})
+        
         res.status(200).json(habits)
     } catch (error) {
         console.error(error)

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, verifyToken } from '../controllers/login';
+import { login, RefreshToken, register, verifyToken } from '../controllers/login';
 import { getUser, getUsers, postUser } from '../controllers/users';
 import { assignHabit, getHabit, getHabits, HabitsOnUsers, patchHabit, postHabit } from '../controllers/habits';
 
@@ -22,5 +22,6 @@ router.get('/HabitsOnUsers/:id',verifyToken, HabitsOnUsers)
 
 router.post('/login', login)
 router.post('/register', register)
+router.get('/refresh-token', RefreshToken)
 
 export default router
